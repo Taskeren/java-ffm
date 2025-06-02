@@ -88,16 +88,6 @@ private fun Arena.malloc(size: Long): MemorySegment {
 }
 
 private fun MemorySegment.getStringUnknownLength(offset: Long = 0, charset: Charset = Charsets.UTF_8): String {
-	val bytes = buildList {
-		for(i in offset until Int.MAX_VALUE) {
-			val byte = get(ValueLayout.JAVA_BYTE, i)
-			if(byte == Byte.MIN_VALUE) {
-				break
-			} else {
-				add(byte)
-				println(byte)
-			}
-		}
-	}
-	return String(bytes.toByteArray(), charset)
+	val seg = if(this.byteSize() == 0L) this.reinterpret(Long.MAX_VALUE) else this
+	return seg.getString(offset, charset)
 }
